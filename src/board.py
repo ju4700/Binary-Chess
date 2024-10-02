@@ -12,10 +12,10 @@ class Board:
         self.selected_piece = None
         self.selected_square = None
         self.move_history = []
-        self.current_turn = 'white'  # Track whose turn it is
+        self.current_turn = 'white'  
         self.setup_pieces()
         self.setup_ui()
-        self.create_menu()  # Add menu creation
+        self.create_menu()
 
     def create_menu(self):
         """Create a futuristic styled menu bar for the application."""
@@ -32,7 +32,6 @@ class Board:
 
         menubar.add_cascade(label="File", menu=file_menu, font=("Consolas", 12, "bold"))
 
-        # Adding hover effect
         def on_enter(event):
             event.widget.config(bg="#3d3d3d", fg="#00FF00")
 
@@ -43,21 +42,21 @@ class Board:
             item.bind("<Enter>", on_enter)
             item.bind("<Leave>", on_leave)
 
-        self.root.config(menu=menubar)  # Attach menu to root
+        self.root.config(menu=menubar) 
 
     def new_game(self):
         """Start a new game."""
         self.move_history.clear()
         self.current_turn = 'white'
         self.setup_pieces()
-        self.draw_board()  # Redraw board
+        self.draw_board() 
 
     def save_game(self):
         """Save the current game state."""
         filename = simpledialog.askstring("Save Game", "Enter a name for the saved game:")
         if filename:
             save_path = os.path.join("Saved games", f"{filename}.pkl")
-            os.makedirs("Saved games", exist_ok=True)  # Create folder if it doesn't exist
+            os.makedirs("Saved games", exist_ok=True)  
 
             with open(save_path, "wb") as f:
                 game_state = {
@@ -79,16 +78,15 @@ class Board:
                     self.squares = game_state["squares"]
                     self.move_history = game_state["move_history"]
                     self.current_turn = game_state["current_turn"]
-                    self.draw_board()  # Redraw board to update UI
-                    self.update_move_history_display()  # Update move history display
-                    self.update_status_display()  # Update status display
+                    self.draw_board() 
+                    self.update_move_history_display()  
+                    self.update_status_display() 
                     messagebox.showinfo("Load Game", "Game loaded successfully!")
             else:
                 messagebox.showerror("Load Game", "Game not found!")
 
     def setup_pieces(self):
         """Initialize the chessboard with pieces in the correct positions."""
-        # Set up white pieces
         for col in range(self.board_size):
             self.squares[1][col] = Piece('Pawn', 'white')  # White pawns
         self.squares[0][0] = self.squares[0][7] = Piece('Rook', 'white')  # White rooks
@@ -97,7 +95,6 @@ class Board:
         self.squares[0][3] = Piece('Queen', 'white')  # White queen
         self.squares[0][4] = Piece('King', 'white')  # White king
 
-        # Set up black pieces
         for col in range(self.board_size):
             self.squares[6][col] = Piece('Pawn', 'black')  # Black pawns
         self.squares[7][0] = self.squares[7][7] = Piece('Rook', 'black')  # Black rooks
@@ -108,12 +105,12 @@ class Board:
 
     def setup_ui(self):
         """Set up the user interface with the board and input row."""
-        self.root.configure(bg="#3b3b3b")  # Dark background
-        self.create_frames()  # Organize layout into frames
+        self.root.configure(bg="#3b3b3b")  
+        self.create_frames()  
         self.draw_labels()
         self.draw_board()
         self.draw_move_history()
-        self.draw_status_box()  # Add status box for current turn
+        self.draw_status_box() 
 
     def create_frames(self):
         """Create frames to better organize the layout."""
@@ -123,12 +120,11 @@ class Board:
         self.history_frame = tk.Frame(self.root, bg="#3b3b3b")
         self.history_frame.grid(row=2, column=0, padx=10, pady=10)
 
-        self.status_frame = tk.Frame(self.root, bg="#3b3b3b")  # Frame for the status box
+        self.status_frame = tk.Frame(self.root, bg="#3b3b3b") 
         self.status_frame.grid(row=1, column=0, padx=10, pady=10)
 
     def draw_labels(self):
         """Draw the row and column labels."""
-        # Labels for columns ('a' to 'h' on bottom, 'a' to 'h' on top)
         for col in range(1, self.board_size + 1):
             tk.Label(self.board_frame, text=chr(96 + col), font=("Courier", 14, "bold"),
                      width=3, height=1, bg="#2b2b2b", fg="white").grid(row=self.board_size + 1, column=col, padx=2,
@@ -137,7 +133,6 @@ class Board:
             tk.Label(self.board_frame, text=chr(96 + col), font=("Courier", 14, "bold"),
                      width=3, height=1, bg="#2b2b2b", fg="white").grid(row=0, column=col, padx=2, pady=2)
 
-        # Labels for rows ('8' to '1' on both sides)
         for row in range(1, self.board_size + 1):
             tk.Label(self.board_frame, text=str(self.board_size + 1 - row), font=("Courier", 14, "bold"),
                      width=2, height=1, bg="#2b2b2b", fg="white").grid(row=row, column=0, padx=2, pady=2)
@@ -163,7 +158,7 @@ class Board:
             width=5, height=2, bg=bg_color, fg="white", relief=tk.RIDGE
         )
         label.grid(row=row + 1, column=col + 1, padx=1, pady=1)
-        label.bind("<Button-1>", lambda e, r=row, c=col: self.select_square(r, c))  # Bind click event
+        label.bind("<Button-1>", lambda e, r=row, c=col: self.select_square(r, c)) 
 
     def select_square(self, row, col):
         """Select a square or move a selected piece."""
@@ -180,39 +175,33 @@ class Board:
 
         piece = self.squares[from_row][from_col]
         if piece and piece.is_valid_move(from_square, to_square, self.squares):
-            # Move the piece
             target_piece = self.squares[to_row][to_col]
             self.squares[to_row][to_col] = piece
             self.squares[from_row][from_col] = None
             self.move_history.append(f"{self.index_to_square(from_square)} to {self.index_to_square(to_square)}")
             self.update_move_history_display()
 
-            # Update only the changed squares
-            self.update_square(from_row, from_col)  # Clear the original square
-            self.update_square(to_row, to_col)  # Update the target square
-
-            # Check for check or checkmate
+            self.update_square(from_row, from_col) 
+            self.update_square(to_row, to_col) 
             if piece.piece_type == 'King':
                 if piece.is_in_check((to_row, to_col), self.squares):
                     self.display_status("Check!")
                 if piece.is_checkmate((to_row, to_col), self.squares):
                     self.display_status("Checkmate!")
-                    return  # End the turn if checkmate
+                    return
 
-            # Change turn after a successful move
             self.current_turn = 'black' if self.current_turn == 'white' else 'white'
             self.update_status_display()
 
         else:
-            self.display_status("Invalid Move!", duration=2000)  # Show invalid move for 2 seconds
+            self.display_status("Invalid Move!", duration=2000) 
 
     def update_square(self, row, col):
         """Update the display of a specific square on the board."""
         piece = self.squares[row][col]
         binary_value = piece.get_binary_value() if piece else "----"
-        bg_color = "#1f1f1f" if (row + col) % 2 == 0 else "#3d3d3d"  # Chessboard colors
+        bg_color = "#1f1f1f" if (row + col) % 2 == 0 else "#3d3d3d" 
 
-        # Update the corresponding label for the square
         square_label = self.board_frame.grid_slaves(row=row + 1, column=col + 1)[0]
         square_label.config(text=binary_value, bg=bg_color)
 
@@ -238,11 +227,11 @@ class Board:
     def update_move_history_display(self):
         """Update the move history display with the latest move."""
         self.history_display.config(state=tk.NORMAL)
-        self.history_display.delete(1.0, tk.END)  # Clear existing text
+        self.history_display.delete(1.0, tk.END) 
         self.history_display.insert(tk.END, " ")
         for move in self.move_history:
             self.history_display.insert(tk.END, f"{move}, ")
-        self.history_display.config(state=tk.DISABLED)  # Set back to disabled for user editing
+        self.history_display.config(state=tk.DISABLED) 
 
     def update_status_display(self):
         """Update the status display with the current turn."""
